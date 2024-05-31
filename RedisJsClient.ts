@@ -10,26 +10,26 @@ export class RedisjsClient implements RedisClient {
   }
 
   async set(key: string, value: string, options: { NX: boolean, PX: number }): Promise<string | null> {
+
     return new Promise((resolve, reject) => {
-      this.client.set(key, value, { NX: options.NX, PX: options.PX }, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
+      try {
+        this.client.set(key, value, { NX: true, PX: options.PX });
+        resolve('OK');            
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   async eval(script: string, keys: string[], args: string[]): Promise<number> {
     return new Promise((resolve, reject) => {
-      this.client.eval(script, { keys, arguments: args }, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result as number);
-        }
-      });
+      try {
+        this.client.eval(script, { keys, arguments: args });
+        resolve(1);
+            
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 }

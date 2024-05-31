@@ -10,8 +10,12 @@ export class IoredisClient implements RedisClient {
   }
 
   async set(key: string, value: string, options: { NX: boolean, PX: number }): Promise<string | null> {
+    
     const result = await this.client.set(key, value, 'PX', options.PX, 'NX');
     return result;
+      
+   
+  
   }
 
   async eval(script: string, keys: string[], args: string[]): Promise<number> {
