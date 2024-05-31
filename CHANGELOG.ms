@@ -18,3 +18,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Initial release of Redlock implementation.
+
+## [2.0.0] - 2024-05-31
+
+### Added
+- Working implementation of RedLock.

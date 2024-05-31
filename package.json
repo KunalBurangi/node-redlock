@@ -1,6 +1,6 @@
 {
     "name": "node-redlock",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "description": "A distributed locking algorithm used to manage distributed resources in a system.",
     "main": "redlock.js",
     "types": "redlock.d.ts",
