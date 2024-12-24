@@ -15,9 +15,6 @@
         "distributed-lock",
         "redis"
     ],
-    "publishConfig": {
-        "registry": "https://npm.pkg.github.com/"
-    },
     "author": "Kunal Burangi",
     "license": "MIT",
     "repository": {"url": "https://github.com/KunalBurangi/node-redlock.git"},
