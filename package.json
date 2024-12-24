@@ -1,6 +1,6 @@
 {
     "name": "node-redlock",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "description": "A distributed locking algorithm used to manage distributed resources in a system.",
     "main": "redlock.js",
     "types": "redlock.d.ts",
@@ -15,6 +15,9 @@
         "distributed-lock",
         "redis"
     ],
+    "publishConfig": {
+        "@KunalBurangi:registry": "https://npm.pkg.github.com"   
+    },
     "author": "Kunal Burangi",
     "license": "MIT",
     "repository": {"url": "https://github.com/KunalBurangi/node-redlock.git"},
