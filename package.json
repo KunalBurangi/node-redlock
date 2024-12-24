@@ -16,7 +16,7 @@
         "redis"
     ],
     "publishConfig": {
-        "@KunalBurangi:registry": "https://npm.pkg.github.com"   
+        "registry": "https://npm.pkg.github.com/"
     },
     "author": "Kunal Burangi",
     "license": "MIT",
