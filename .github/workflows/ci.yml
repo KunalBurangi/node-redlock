@@ -49,8 +49,8 @@ jobs:
     
     - name: Authenticate with npm
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: echo "Authentication complete"
-      
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_KEY }}
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_KEY }}" >> .npmrc
+
     - name: Publish to npm
       run: npm publish
