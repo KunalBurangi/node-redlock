@@ -50,6 +50,7 @@ jobs:
     - name: Authenticate with npm
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+      run: echo "Authentication complete"
+      
     - name: Publish to npm
       run: npm publish
