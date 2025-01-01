@@ -23,3 +23,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Working implementation of RedLock.
+
+
+## [2.2.0] - 2025-01-01
+
+### Added
+- Added features for renewLock and acquire lock with custom retry stratergy
