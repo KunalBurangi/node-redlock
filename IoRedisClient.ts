@@ -22,4 +22,12 @@ export class IoredisClient implements RedisClient {
     const result = await this.client.eval(script, keys.length, ...keys, ...args);
     return result as number;
   }
+  public async getTTL(resource: string): Promise<number> {
+    return this.client.pttl(resource); // Or any method you use
+  }
+    // Expose Redis get method
+  public async get(resource: string): Promise<string | null> {
+      return this.client.get(resource); // Calls the ioredis 'get' method
+  }
+  
 }

@@ -91,4 +91,77 @@ describe('Redlock', () => {
     sinon.assert.calledWith(redisjsClient1.eval, sinon.match.string, [resource], [lock!.value]);
     sinon.assert.calledWith(redisjsClient2.eval, sinon.match.string, [resource], [lock!.value]);
   });
+it('should acquire a lock with custom retry strategy', async () => {
+  const resource = 'locks:test';
+  const ttl = 1000;
+  const retryStrategy = (attempt: number) => attempt * 100;
+
+  ioredisClient1.set.resolves('OK');
+  ioredisClient2.set.resolves('OK');
+  redisjsClient1.set.resolves('OK');
+  redisjsClient2.set.resolves('OK');
+
+  const lock = await redlock.acquireLockWithCustomRetry(resource, ttl, retryStrategy);
+  expect(lock).to.not.be.null;
+  expect(lock!.resource).to.equal(resource);
+
+  ioredisClient1.eval.resolves(1);
+  ioredisClient2.eval.resolves(1);
+  redisjsClient1.eval.resolves(1);
+  redisjsClient2.eval.resolves(1);
+
+  await redlock.releaseLock(resource, lock!.value);
+
+  sinon.assert.calledWith(ioredisClient1.eval, sinon.match.string, [resource], [lock!.value]);
+  sinon.assert.calledWith(ioredisClient2.eval, sinon.match.string, [resource], [lock!.value]);
+  sinon.assert.calledWith(redisjsClient1.eval, sinon.match.string, [resource], [lock!.value]);
+  sinon.assert.calledWith(redisjsClient2.eval, sinon.match.string, [resource], [lock!.value]);
+});
+
+it('should fail to acquire a lock with custom retry strategy if not enough instances succeed', async () => {
+  const resource = 'locks:test';
+  const ttl = 1000;
+  const retryStrategy = (attempt: number) => attempt * 100;
+
+  ioredisClient1.set.resolves('OK');
+  ioredisClient2.set.resolves(null);
+  redisjsClient1.set.resolves(null);
+  redisjsClient2.set.resolves('OK');
+
+  const lock = await redlock.acquireLockWithCustomRetry(resource, ttl, retryStrategy);
+  expect(lock).to.be.null;
+});
+
+it('should renew a lock', async () => {
+  const resource = 'locks:test';
+  const ttl = 1000;
+  const value = 'unique-lock-value';
+
+  ioredisClient1.set.resolves('OK');
+  ioredisClient2.set.resolves('OK');
+  redisjsClient1.set.resolves('OK');
+  redisjsClient2.set.resolves('OK');
+
+  const success = await redlock.renewLock(resource, value, ttl);
+  expect(success).to.be.true;
+
+  sinon.assert.calledWith(ioredisClient1.set, resource, value, { NX: false, PX: ttl });
+  sinon.assert.calledWith(ioredisClient2.set, resource, value, { NX: false, PX: ttl });
+  sinon.assert.calledWith(redisjsClient1.set, resource, value, { NX: false, PX: ttl });
+  sinon.assert.calledWith(redisjsClient2.set, resource, value, { NX: false, PX: ttl });
+});
+
+it('should fail to renew a lock if not all instances succeed', async () => {
+  const resource = 'locks:test';
+  const ttl = 1000;
+  const value = 'unique-lock-value';
+
+  ioredisClient1.set.resolves('OK');
+  ioredisClient2.set.resolves(null);
+  redisjsClient1.set.resolves('OK');
+  redisjsClient2.set.resolves(null);
+
+  const success = await redlock.renewLock(resource, value, ttl);
+  expect(success).to.be.false;
+})
 });
