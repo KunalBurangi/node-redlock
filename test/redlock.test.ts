@@ -142,14 +142,32 @@ it('should renew a lock', async () => {
   redisjsClient1.set.resolves('OK');
   redisjsClient2.set.resolves('OK');
 
+  const lock = await redlock.acquireLock(resource, ttl);
+  expect(lock).to.not.be.null;
+  expect(lock!.resource).to.equal(resource);
+  // Mock the eval method to simulate successful renewal
+  ioredisClient1.eval.resolves(1);
+  ioredisClient2.eval.resolves(1);
+  redisjsClient1.eval.resolves(1);
+  redisjsClient2.eval.resolves(1);
+
   const success = await redlock.renewLock(resource, value, ttl);
   expect(success).to.be.true;
 
-  sinon.assert.calledWith(ioredisClient1.set, resource, value, { NX: false, PX: ttl });
-  sinon.assert.calledWith(ioredisClient2.set, resource, value, { NX: false, PX: ttl });
-  sinon.assert.calledWith(redisjsClient1.set, resource, value, { NX: false, PX: ttl });
-  sinon.assert.calledWith(redisjsClient2.set, resource, value, { NX: false, PX: ttl });
+  // Verify that eval was called with the correct arguments
+  const script = `
+    if redis.call("get", KEYS[1]) == ARGV[1] then
+      return redis.call("pexpire", KEYS[1], ARGV[2])
+    else
+      return 0
+    end
+  `;
+  sinon.assert.calledWith(ioredisClient1.eval, script, [resource], [value, ttl.toString()]);
+  sinon.assert.calledWith(ioredisClient2.eval, script, [resource], [value, ttl.toString()]);
+  sinon.assert.calledWith(redisjsClient1.eval, script, [resource], [value, ttl.toString()]);
+  sinon.assert.calledWith(redisjsClient2.eval, script, [resource], [value, ttl.toString()]);
 });
+
 
 it('should fail to renew a lock if not all instances succeed', async () => {
   const resource = 'locks:test';
