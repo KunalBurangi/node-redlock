@@ -1,3 +1,4 @@
+<!-- GitAds-Verify: 6CQTDZI6WBC1PZQVGQRT3MOKXJ5B4RI4 -->
 # Redlock Implementation in TypeScript
 
 This library provides a robust and distributed locking mechanism using the Redlock algorithm implemented in TypeScript. It allows you to acquire, release, and renew locks on shared resources across multiple Redis instances.
