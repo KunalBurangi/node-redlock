@@ -1,11 +1,11 @@
 // RedisjsClient.ts
-import {  RedisClientType } from 'redis';
+import {  RedisClientType, RedisClusterType } from 'redis';
 import { RedisClient } from './interfaces/RedisClient';
 
 export class RedisjsClient implements RedisClient {
-  private client: RedisClientType;
+  private client: RedisClientType | RedisClusterType;
 
-  constructor(client: RedisClientType) {
+  constructor(client: RedisClientType | RedisClusterType)  {
     this.client = client;
   }
 

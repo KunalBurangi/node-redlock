@@ -19,7 +19,7 @@ describe('Redlock', () => {
     redisjsClient2 = new RedisjsClientMock();
 
     const clients = [ioredisClient1, ioredisClient2, redisjsClient1, redisjsClient2];
-    redlock = new Redlock(clients);
+    redlock = new Redlock(clients,'unique-owner-id');
   });
 
   afterEach(() => {

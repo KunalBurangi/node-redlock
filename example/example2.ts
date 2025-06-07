@@ -22,7 +22,7 @@ import {Redlock} from '../redlock';
 
   // Combine all clients
   const clients = [...ioredisClients, ...redisjsClientInstances];
-  const redlock = new Redlock(clients);
+  const redlock = new Redlock(clients,'unique-owner-id');
 
   const resource = 'locks:example';
   const ttl = 10000; // 10 seconds

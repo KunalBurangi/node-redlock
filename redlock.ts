@@ -1,23 +1,27 @@
 // Redlock.ts
+import { RedisClusterType } from 'redis';
 import { RedisClient } from './interfaces/RedisClient';
 
 interface Lock {
   resource: string;
   value: string;
   ttl: number;
+  owner: string;
 }
 
 export class Redlock {
-  private clients: RedisClient[];
+  private clients: RedisClient[] | RedisClusterType[];
   private retryCount: number;
   private retryDelay: number;
   private driftFactor: number;
+  private ownerId: string;
 
-  constructor(clients: RedisClient[], retryCount = 3, retryDelay = 200, driftFactor = 0.01) {
+  constructor(clients: RedisClient[], ownerId: string, retryCount = 3, retryDelay = 200, driftFactor = 0.01) {
     this.clients = clients;
     this.retryCount = retryCount;
     this.retryDelay = retryDelay;
     this.driftFactor = driftFactor;
+    this.ownerId = ownerId;
   }
 
    /**
@@ -28,8 +32,8 @@ export class Redlock {
    * @param ttl - The time-to-live for the lock in milliseconds.
    * @returns A promise that resolves to true if the lock was acquired, false otherwise.
    */
-  private async acquireLockInstance(client: RedisClient, resource: string, value: string, ttl: number): Promise<boolean> {
-    const result = await client.set(resource, value, { NX: true, PX: ttl });
+  private async acquireLockInstance(client:   RedisClusterType, resource: string, value: string, ttl: number): Promise<boolean> {
+    const result = await client[0].client.set(resource, value, { NX: true, PX: ttl });
     return result === 'OK';
   }
 
@@ -68,7 +72,7 @@ export class Redlock {
       const valid = elapsedTime < ttl * (1 - this.driftFactor);
 
       if (successCount >= Math.floor(this.clients.length / 2) + 1 && valid) {
-        return { resource, value, ttl: end };
+        return { resource, value, ttl: end, owner: this.ownerId };
       }
 
       await this.releaseLock(resource, value);
@@ -92,7 +96,7 @@ export class Redlock {
     for (let i = 0; i < this.retryCount; i++) {
       const successCount = await this.tryAcquire(resource, value, ttl);
       if (successCount >= Math.floor(this.clients.length / 2) + 1) {
-        return { resource, value, ttl: end };
+        return { resource, value, ttl: end, owner: this.ownerId };
       }
       await this.releaseLock(resource, value);
       await this.sleep(retryStrategy(i));
@@ -121,7 +125,7 @@ export class Redlock {
    * @returns A promise that resolves when the lock has been released.
    */
   public async releaseLock(resource: string, value: string): Promise<void> {
-    const lock: Lock = { resource, value, ttl: 0 };
+    const lock: Lock = { resource, value, ttl: 0, owner: this.ownerId };
     const promises = this.clients.map(client => this.releaseLockInstance(client, lock));
     await Promise.all(promises);
   }

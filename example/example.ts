@@ -1,27 +1,37 @@
 // Usage example
 import Redis from 'ioredis';
-import { RedisClientType, createClient } from 'redis';
+import {  RedisClusterType, createClient, createCluster } from 'redis';
 import { IoredisClient } from '../IoRedisClient';
 import { RedisjsClient } from '../RedisJsClient';
 import { Redlock } from '../redlock';
 
 (async () => {
   const ioredisClients = [
-    new Redis({ host: 'localhost', port: 6379 }),
+    new Redis.Cluster([
+      { host: 'localhost', port: 7001 },
+      { host: 'localhost', port: 7002 },
+      { host: 'localhost', port: 7003 }
+    ],
+    {
+      scaleReads: "slave",
+    }),
 
   ].map(client => new IoredisClient(client));
 
   const redisjsClients = [
-    createClient({ url: 'redis://localhost:6379' }),
+    // createCluster({ rootNodes:[{url: 'redis://localhost:7001' },
+    //   {url: 'redis://localhost:7002' },
+    //   {url: 'redis://localhost:7003' }
+    // ]}),
   ];
 
   await Promise.all(redisjsClients.map(client => client.connect()));
-  const redisjsClientInstances = redisjsClients.map(client => new RedisjsClient(client as RedisClientType));
+  const redisjsClientInstances = redisjsClients.map(client => new RedisjsClient(client as RedisClusterType));
 
   // Choose the set of clients you want to use
   const clients = [...ioredisClients, ...redisjsClientInstances];
 
-  const redlock = new Redlock(clients);
+  const redlock = new Redlock(clients,'unique-owner-id');
 
   const resource = 'locks:example';
   const ttl = 10000; // 10 seconds

@@ -1,11 +1,11 @@
 // IoredisClient.ts
-import Redis from 'ioredis';
+import {Redis,Cluster} from 'ioredis';
 import { RedisClient } from './interfaces/RedisClient';
 
 export class IoredisClient implements RedisClient {
-  private client: Redis;
+  private client: Redis | Cluster;
 
-  constructor(client: Redis) {
+  constructor(client: Redis | Cluster) {
     this.client = client;
   }
 
