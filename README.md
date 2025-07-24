@@ -1,7 +1,3 @@
-<!-- GitAds-Verify: 6CQTDZI6WBC1PZQVGQRT3MOKXJ5B4RI4 -->
-## GitAds Sponsored
-[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=kunalburangi/node-redlock@github)](https://gitads.dev/v1/ad-track?source=kunalburangi/node-redlock@github)
-
 
 # Redlock Implementation in TypeScript
 
