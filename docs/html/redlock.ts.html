@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>redlock.ts</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+  <style>body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }</style>
+</head>
+<body>
+  <h1>redlock.ts</h1>
+  <h1>Software Design Document</h1>
+<h2>Introduction and Overview</h2>
+<p>This document describes the design of a Redlock implementation in TypeScript. The system is designed to provide a distributed lock using the Redis database as the backend. The Redlock algorithm is used to ensure that multiple clients can acquire locks on the same resource without deadlocks or race conditions.</p>
+<h2>System Architecture</h2>
+<p>The system consists of several components:</p>
+<ul>
+<li>A <code>RedisClient</code> interface that defines the methods for interacting with a Redis database.</li>
+<li>The <code>Redlock</code> class, which is responsible for acquiring, releasing, and renewing locks on a specified resource using the Redlock algorithm.</li>
+</ul>
+<h2>Data Design</h2>
+<p>The data design involves the use of keys in the Redis database to represent locks. Each key consists of three parts: the resource being locked, the lock value (a unique string), and the time-to-live for the lock. The Redlock algorithm uses these keys to ensure that only one client can acquire a lock on a particular resource at a time.</p>
+<h2>Interface Design</h2>
+<p>The <code>RedisClient</code> interface defines the methods for interacting with a Redis database:</p>
+<ul>
+<li><code>set(resource: string, value: string, options: SetOptions): Promise&lt;SetResult&gt;</code>: Attempts to acquire a lock on a single Redis client.</li>
+<li><code>eval(script: string, keys: string[], args: any[]): Promise&lt;EvalResult&gt;</code>: Releases a lock on a single Redis client.</li>
+</ul>
+<p>The <code>Redlock</code> class provides the following methods for acquiring, releasing, and renewing locks:</p>
+<ul>
+<li><code>acquireLockInstance(client: RedisClient, resource: string, value: string, ttl: number): Promise&lt;boolean&gt;</code>: Attempts to acquire a lock on a single Redis client.</li>
+<li><code>releaseLockInstance(client: RedisClient, lock: Lock): Promise&lt;number&gt;</code>: Releases a lock on a single Redis client.</li>
+<li><code>acquireLock(resource: string, ttl: number): Promise&lt;Lock | null&gt;</code>: Attempts to acquire a lock on the specified resource using the Redlock algorithm.</li>
+<li><code>acquireLockWithCustomRetry(resource: string, ttl: number, retryStrategy: (attempt: number) =&gt; number): Promise&lt;Lock | null&gt;</code>: Attempts to acquire a lock on the specified resource using a custom retry strategy.</li>
+<li><code>tryAcquire(resource: string, value: string, ttl: number): Promise&lt;number&gt;</code>: Attempts to acquire a lock on the specified resource across all clients.</li>
+<li><code>releaseLock(resource: string, value: string): Promise&lt;void&gt;</code>: Releases a lock on the specified resource.</li>
+<li><code>renewLock(resource: string, value: string, ttl: number): Promise&lt;boolean&gt;</code>: Renews a lock on the specified resource.</li>
+<li><code>sleep(ms: number): Promise&lt;void&gt;</code>: Sleeps for the specified number of milliseconds.</li>
+</ul>
+<h2>Component Design</h2>
+<p>The <code>Redlock</code> class is responsible for managing the acquisition, release, and renewal of locks using the Redlock algorithm. The class takes an array of <code>RedisClient</code> objects in its constructor, which it uses to attempt lock operations across all clients. The class also has a retry count and a retry delay that can be configured during initialization.</p>
+<p>The <code>RedisClient</code> interface defines the methods for interacting with a Redis database, including setting keys with a unique value and evaluating Lua scripts.</p>
+<h2>User Interface Design</h2>
+<p>There is no user interface for this system as it is designed to be used programmatically by other applications that need to acquire locks using the Redlock algorithm.</p>
+<h2>Assumptions and Dependencies</h2>
+<ul>
+<li>The Redis database must be installed and running on the target environment.</li>
+<li>The <code>RedisClient</code> objects passed to the <code>Redlock</code> constructor must have valid <code>set</code> and <code>eval</code> methods that can be used to interact with the Redis database.</li>
+<li>The system assumes that the Redlock algorithm is correct and will work correctly in all cases.</li>
+</ul>
+<h2>Glossary of Terms</h2>
+<ul>
+<li><code>Redlock</code>: A class that provides a distributed lock using the Redlock algorithm.</li>
+<li><code>RedisClient</code>: An interface that defines the methods for interacting with a Redis database.</li>
+<li><code>Lock</code>: An object representing a lock on a specified resource, consisting of the resource name, the lock value, and the time-to-live for the lock.</li>
+<li><code>Redlock algorithm</code>: A distributed algorithm for acquiring locks that uses a combination of timeouts, retry counts, and drift factors to avoid deadlocks and race conditions.</li>
+<li><code>SetOptions</code>: An object defining options for setting keys in a Redis database, including the NX option (for &quot;not exists&quot;) and the PX option (for &quot;expire&quot;).</li>
+<li><code>SetResult</code>: The result of the <code>set</code> method on a Redis client, indicating whether the operation was successful or not.</li>
+<li><code>EvalResult</code>: The result of the <code>eval</code> method on a Redis client, indicating the number of keys that were affected by the operation.</li>
+<li><code>SetOptions</code>, <code>SetResult</code>, and <code>EvalResult</code> are defined in the <code>redis</code> package for interacting with a Redis database.</li>
+</ul>
+<h2>Class Diagram (in Mermaid syntax)</h2>
+<pre><code class="language-mermaid">class RedisClient {
+    set(resource: string, value: string, options: SetOptions): Promise&lt;SetResult&gt;
+    eval(script: string, keys: string[], args: any[]): Promise&lt;EvalResult&gt;
+}
+
+class Redlock {
+    private clients: RedisClient[];
+    private retryCount: number;
+    private retryDelay: number;
+    private driftFactor: number;
+    
+    constructor(clients: RedisClient[], retryCount = 3, retryDelay = 200, driftFactor = 0.01) {
+        this.clients = clients;
+        this.retryCount = retryCount;
+        this.retryDelay = retryDelay;
+        this.driftFactor = driftFactor;
+    }
+    
+    private async acquireLockInstance(client: RedisClient, resource: string, value: string, ttl: number): Promise&lt;boolean&gt; { ... }
+    
+    private async releaseLockInstance(client: RedisClient, lock: Lock): Promise&lt;number&gt; { ... }
+    
+    public async acquireLock(resource: string, ttl: number): Promise&lt;Lock | null&gt; { ... }
+    
+    public async acquireLockWithCustomRetry(resource: string, ttl: number, retryStrategy: (attempt: number) =&gt; number): Promise&lt;Lock | null&gt; { ... }
+    
+    private async tryAcquire(resource: string, value: string, ttl: number): Promise&lt;number&gt; { ... }
+    
+    public async releaseLock(resource: string, value: string): Promise&lt;void&gt; { ... }
+    
+    public async renewLock(resource: string, value: string, ttl: number): Promise&lt;boolean&gt; { ... }
+    
+    private sleep(ms: number): Promise&lt;void&gt; { ... }
+}
+</code></pre>
+
+</body>
+</html>

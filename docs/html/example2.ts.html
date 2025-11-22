@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>example2.ts</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+  <style>body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }</style>
+</head>
+<body>
+  <h1>example2.ts</h1>
+  <h2> Introduction and Overview</h2>
+<p>This code snippet demonstrates an implementation of a distributed lock using Redis, with the help of the Ioredis and Redlock libraries. The code snippet is written in TypeScript and uses Promises for asynchronous operations.</p>
+<h2>System Architecture</h2>
+<p>The code uses two clients to connect to Redis: <code>ioredis</code> and <code>redisjs</code>. Both clients are used to create a Redlock client, which is then used to acquire and release locks on a specified resource. The use of Redlock ensures that the lock is distributed across multiple Redis instances, providing better fault tolerance than using a single Redis instance.</p>
+<h2>Data Design</h2>
+<p>The code defines two arrays, <code>ioredisClients</code> and <code>redisjsClients</code>, which contain client configurations for connecting to Redis. The clients are then combined into an array of clients, which is passed to the Redlock constructor to create a distributed lock.</p>
+<h2>Interface Design</h2>
+<p>The code imports the necessary modules from Ioredis, RedisJs, and Redlock, and defines two custom interfaces: <code>IoredisClient</code> and <code>RedisJsClient</code>. These interfaces are used to define the shape of the client objects returned by the respective libraries.</p>
+<h2>Component Design</h2>
+<p>The code defines a function that creates an array of Ioredis clients and another function that creates an array of RedisJs clients. These functions are then used to initialize the clients and create the Redlock client.</p>
+<h2>User Interface Design</h2>
+<p>There is no user interface in this code snippet, as it is focused on implementing a distributed lock using Redis.</p>
+<h2>Assumptions and Dependencies</h2>
+<p>The code assumes that there are multiple Redis instances running on the local machine, listening on port 6379. It also depends on the Ioredis and Redlock libraries to provide the necessary functionality for creating a distributed lock using Redis.</p>
+<h2>Glossary of Terms</h2>
+<ul>
+<li><code>ioredis</code>: A popular library for connecting to Redis databases from Node.js applications.</li>
+<li><code>redisjs</code>: Another library for connecting to Redis databases from Node.js applications.</li>
+<li><code>Redlock</code>: A library that provides distributed locking using Redis.</li>
+<li><code>IoredisClient</code> and <code>RedisJsClient</code>: Custom interfaces defined in the code snippet to define the shape of client objects returned by the respective libraries.</li>
+</ul>
+<h2>Class Diagram (in Mermaid syntax)</h2>
+<pre><code class="language-css">class IoredisClient {
+    - host: string;
+    - port: number;
+    + acquireLock(resource: string, ttl: number): Promise&lt;boolean&gt;;
+    + releaseLock(resource: string, lockId: string): Promise&lt;void&gt;;
+}
+
+class RedisJsClient {
+    - url: string;
+    + connect(): Promise&lt;void&gt;;
+    + quit(): Promise&lt;void&gt;;
+}
+
+class Redlock {
+    - clients: IoredisClient[] &amp; RedisJsClient[];
+    + acquireLock(resource: string, ttl: number): Promise&lt;boolean&gt;;
+    + releaseLock(resource: string, lockId: string): Promise&lt;void&gt;;
+}
+</code></pre>
+
+</body>
+</html>

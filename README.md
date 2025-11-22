@@ -1,7 +1,3 @@
-<!-- GitAds-Verify: 6CQTDZI6WBC1PZQVGQRT3MOKXJ5B4RI4 -->
-## GitAds Sponsored
-[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=kunalburangi/node-redlock@github)](https://gitads.dev/v1/ad-track?source=kunalburangi/node-redlock@github)
-
 
 # Redlock Implementation in TypeScript
 
@@ -168,8 +164,47 @@ Renews the TTL for an existing lock.
 
 ---
 
+---
+
+### Using the `using` Pattern (Recommended)
+
+The `using` method simplifies lock management by automatically acquiring and releasing the lock. It also supports automatic extension.
+
+```typescript
+await redlock.using('my-resource', 5000, async (lock) => {
+  // Critical section
+  console.log('Lock acquired:', lock);
+  await doWork();
+}, { autoExtend: true }); // Optional: Automatically extend lock while working
+```
+
+---
+
+### Events
+
+`Redlock` extends `EventEmitter` and emits the following events:
+
+- `acquired`: When a lock is successfully acquired.
+- `released`: When a lock is released.
+- `renewed`: When a lock is renewed.
+- `clientError`: When a Redis client error occurs.
+- `error`: When a background error occurs (e.g., auto-extension failure).
+
+```typescript
+redlock.on('acquired', (lock) => {
+  console.log('Lock acquired:', lock);
+});
+
+redlock.on('clientError', (err) => {
+  console.error('Redis client error:', err);
+});
+```
+
+---
+
 ## Notes
 
+- **Secure IDs**: Lock values are now generated using `crypto.randomUUID()` for better security.
 - Ensure all Redis clients are connected and synchronized for optimal performance.
 - Use a unique `value` for each lock to prevent accidental unlocking by other processes.
 

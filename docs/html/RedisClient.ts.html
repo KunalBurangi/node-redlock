@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RedisClient.ts</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+  <style>body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }</style>
+</head>
+<body>
+  <h1>RedisClient.ts</h1>
+  <h2> Introduction and Overview</h2>
+<p>This Software Design Document (SDD) describes the design of a Redis client for interacting with a Redis database using TypeScript and JavaScript. The purpose of this SDK is to provide a simple and easy-to-use interface for developers to access Redis functionality, allowing them to perform common operations such as setting keys and evaluating scripts.</p>
+<h2>System Architecture</h2>
+<p>The Redis client is implemented as an interface with two methods: <code>set</code> and <code>eval</code>. The <code>set</code> method takes three parameters: a key string, a value string, and options object that specifies whether the operation should only set the key if it does not exist (NX) and the time to live (PX). The <code>eval</code> method takes three parameters as well: a script string, an array of keys, and an array of arguments for the script. Both methods return promises that resolve with the result of the operation or <code>null</code> in case of failure.</p>
+<h2>Data Design</h2>
+<p>The Redis client interface defines two types of operations: setting keys and evaluating scripts. The <code>set</code> method is used to set a key-value pair, while the <code>eval</code> method is used to execute a script on the Redis database.</p>
+<h2>Interface Design</h2>
+<p>The Redis client interface provides a simple and intuitive API for developers to interact with a Redis database. The two methods, <code>set</code> and <code>eval</code>, allow developers to perform common operations such as setting keys and evaluating scripts. The options object in the <code>set</code> method allows for more advanced usage, such as specifying whether the key should only be set if it does not already exist.</p>
+<h2>Component Design</h2>
+<p>The Redis client is a TypeScript/JavaScript interface that can be implemented by any class or module that provides the required functionality for interacting with a Redis database. The design of the component implementing this interface would depend on the specifics of how the Redis database is accessed and managed, but could involve communicating with a Redis server using a library such as <code>redis</code> or <code>ioredis</code>.</p>
+<h2>User Interface Design</h2>
+<p>The user interface for the Redis client is not specified in this SDK. The focus of this design document is on the API and implementation details, rather than the specifics of how the client is used by end-users. However, it could be implemented as a standalone library that can be included in other projects, or as part of a larger application that provides a graphical user interface for managing Redis databases.</p>
+<h2>Assumptions and Dependencies</h2>
+<ul>
+<li>The Redis client assumes that the underlying Redis database is accessible using a library such as <code>redis</code> or <code>ioredis</code>.</li>
+<li>The Redis client has no explicit dependencies, but it may depend on any libraries or modules used to implement the interface.</li>
+</ul>
+<h2>Glossary of Terms</h2>
+<ul>
+<li><strong>Redis</strong>: A popular in-memory data structure store that supports a variety of data structures such as strings, lists, and sets.</li>
+<li><strong>TypeScript</strong>: A typed superset of JavaScript that compiles to plain JavaScript.</li>
+<li><strong>JavaScript</strong>: A high-level programming language commonly used for web development.</li>
+<li><strong>Interface</strong>: A type in TypeScript that defines the shape of an object, including its properties and methods.</li>
+<li><strong>Promise</strong>: A mechanism for handling asynchronous operations in JavaScript, allowing developers to write code that will execute when a specific operation has completed.</li>
+</ul>
+<h2>Class Diagram (in Mermaid syntax)</h2>
+<pre><code class="language-mermaid">class RedisClient {
+    set(key: string, value: string, options: { NX: boolean, PX: number }): Promise&lt;string | null&gt;;
+    eval(script: string, keys: string[], args: string[]): Promise&lt;number&gt;;
+}
+</code></pre>
+
+</body>
+</html>
