@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RedisjsClientMock.ts</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+  <style>body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }</style>
+</head>
+<body>
+  <h1>RedisjsClientMock.ts</h1>
+  <h1> Software Design Document (SDD) for RedisjsClientMock.ts</h1>
+<h2>Introduction and Overview</h2>
+<p>The <code>RedisjsClientMock</code> is a mock implementation of the <code>RedisClient</code> interface defined in the <code>../interfaces/RedisClient</code> module. This class is used as a test double for testing purposes, allowing developers to simulate the behavior of the actual <code>RedisClient</code> without interacting with a real Redis server.</p>
+<h2>System Architecture</h2>
+<h3>Class Diagram</h3>
+<pre><code class="language-lua">    +-------------------+
+    | RedisjsClientMock   |
+    +-----------+
+    | - set:     |
+    |   SinonStub;      |
+    | - eval:        |
+    |                   |
+    | - constructor()  |
+    +-----------+
+</code></pre>
+<h2>Data Design</h2>
+<p>There are no data design elements to discuss as the code does not interact with any databases or external data sources.</p>
+<h2>Interface Design</h2>
+<p>The <code>RedisjsClientMock</code> class implements the <code>RedisClient</code> interface defined in the <code>../interfaces/RedisClient</code> module. This interface defines two methods: <code>set(key: string, value: any): void</code> and <code>eval(command: string): void</code>.</p>
+<h2>Component Design</h2>
+<p>The <code>RedisjsClientMock</code> class does not have any components as it is a simple class with only two methods.</p>
+<h2>User Interface Design</h2>
+<p>As this is a mock implementation, there is no user interface design to discuss. The focus of the mock implementation is solely on simulating the behavior of the <code>RedisClient</code> interface for testing purposes.</p>
+<h2>Assumptions and Dependencies</h2>
+<p>The assumptions made in this code are that the <code>set(key: string, value: any): void</code> and <code>eval(command: string): void</code> methods should throw an error when called. This assumption is likely made to ensure that the mock implementation behaves consistently with the behavior of the actual <code>RedisClient</code> class.</p>
+<p>There are no dependencies on external libraries or modules in this code, as the focus is solely on creating a test double for the <code>RedisClient</code> interface.</p>
+<h2>Glossary of Terms</h2>
+<ul>
+<li><strong>Test Double</strong>: A class that is used to simulate the behavior of another class during testing. In this case, the <code>RedisjsClientMock</code> is a test double for the <code>RedisClient</code> interface.</li>
+<li><strong>SinonStub</strong>: A stub function provided by the Sinon library. A stub function allows you to define how a particular method or function should behave in a specific context. In this case, the <code>set(key: string, value: any): void</code> and <code>eval(command: string): void</code> methods are defined as stub functions using the Sinon <code>stub()</code> method.</li>
+<li><strong>RedisClient</strong>: An interface that defines the methods that can be called on an object representing a Redis client. In this case, the <code>RedisjsClientMock</code> class implements this interface to create a mock implementation of a Redis client.</li>
+</ul>
+
+</body>
+</html>

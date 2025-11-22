@@ -7,7 +7,7 @@ export class IoredisClientMock implements RedisClient {
   eval: SinonStub;
 
   constructor() {
-    this.set = stub();
-    this.eval = stub();
+    this.set = stub().resolves('OK');
+    this.eval = stub().resolves(1);
   }
 }

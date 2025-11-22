@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>IoRedisClient.ts</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+  <style>body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }</style>
+</head>
+<body>
+  <h1>IoRedisClient.ts</h1>
+  <h1>IoRedisClient.ts SDD</h1>
+<h2>Introduction and Overview</h2>
+<p>This document provides a detailed overview of the code found in <code>IoRedisClient.ts</code>. The file is responsible for implementing a Redis client using the <code>ioredis</code> library. The class <code>IoredisClient</code> is created to handle interactions with a Redis database using the provided <code>RedisClient</code> interface as a reference.</p>
+<h2>System Architecture</h2>
+<p>The system architecture depicted in this document utilizes the <code>ioredis</code> library, which acts as an abstraction layer between the client and the Redis database. The <code>IoredisClient</code> class is responsible for interacting with the Redis database using the <code>Redis</code> object provided during its construction. The <code>RedisClient</code> interface serves as a contract defining the required methods for this interaction.</p>
+<p><img src="https://i.imgur.com/GyV0Wc.png" alt="System Architecture"></p>
+<h2>Data Design</h2>
+<p>The data design in this system involves storing and retrieving data from a Redis database using key-value pairs. The keys serve as unique identifiers for the values stored within the database.</p>
+<h3>Key-Value Pair Structure</h3>
+<p>In this implementation, keys are strings, and values can be of any type. The specific data type of the value is not relevant to the <code>IoredisClient</code> class.</p>
+<h3>Redis Database Operations</h3>
+<p>The <code>IoredisClient</code> class implements methods for setting, getting, and evaluating scripts in the Redis database:</p>
+<ul>
+<li><p><code>set(key: string, value: string, options: { NX: boolean, PX: number }): Promise&lt;string | null&gt;</code></p>
+<ul>
+<li>This method stores a key-value pair in the Redis database, with an optional expiration time (PX) and the &#39;NX&#39; flag to prevent overwriting existing keys.</li>
+</ul>
+</li>
+<li><p><code>eval(script: string, keys: string[], args: string[]): Promise&lt;number&gt;</code></p>
+<ul>
+<li>This method executes a script on the Redis server, passing the provided arguments (keys and values) to the script. The script can perform any operation supported by the Redis protocol.</li>
+</ul>
+</li>
+<li><p><code>getTTL(resource: string): Promise&lt;number&gt;</code></p>
+<ul>
+<li>This method retrieves the time to live (TTL) of a key from the Redis database, indicating when the value associated with the key will expire.</li>
+</ul>
+</li>
+<li><p><code>get(resource: string): Promise&lt;string | null&gt;</code></p>
+<ul>
+<li>This method retrieves the value associated with a key from the Redis database.</li>
+</ul>
+</li>
+</ul>
+<h2>Interface Design</h2>
+<p>The <code>RedisClient</code> interface is used to define the contract for the interactions between the client and the Redis database:</p>
+<pre><code class="language-typescript">export interface RedisClient {
+  set(key: string, value: string, options: { NX: boolean, PX: number }): Promise&lt;string | null&gt;;
+  eval(script: string, keys: string[], args: string[]): Promise&lt;number&gt;;
+  getTTL(resource: string): Promise&lt;number&gt;;
+  get(resource: string): Promise&lt;string | null&gt;;
+}
+</code></pre>
+<p>This interface ensures that any implementation of the <code>IoredisClient</code> class adheres to this contract, allowing for interchangeable Redis client implementations.</p>
+<h2>Component Design</h2>
+<p>The primary component in this system is the <code>IoredisClient</code> class, which serves as a proxy for interacting with a Redis database using the provided <code>Redis</code> object. The <code>RedisClient</code> interface further encapsulates the interactions and ensures that any implementation of the <code>IoredisClient</code> class follows the required method structure.</p>
+<p><img src="https://i.imgur.com/GyV0Wc.png" alt="Component Design"></p>
+<h2>User Interface Design</h2>
+<p>The <code>IoredisClient</code> class itself does not have a direct user interface, as it is meant to be used as an abstract layer for interacting with a Redis database. The user interface would typically be provided by the application or service that utilizes this class.</p>
+<h2>Assumptions and Dependencies</h2>
+<p>The following assumptions and dependencies are present in this system:</p>
+<ul>
+<li><p>The <code>ioredis</code> library is required to communicate with the Redis database. This dependency must be managed separately from the codebase, as it is not included within the file.</p>
+</li>
+<li><p>The Redis server is assumed to be running and accessible at the time of implementation.</p>
+</li>
+</ul>
+<h2>Glossary of Terms</h2>
+<ul>
+<li><p><strong>Redis Database</strong>: A NoSQL key-value store database, known for its high performance and in-memory data structures.</p>
+</li>
+<li><p><strong>IoredisClient</strong>: A class responsible for interacting with a Redis database using the <code>ioredis</code> library.</p>
+</li>
+<li><p><strong>Redis Client</strong>: An interface defining the contract for interacting with a Redis database.</p>
+</li>
+<li><p><strong>Key</strong>: A unique identifier used to store and retrieve data from a Redis database.</p>
+</li>
+<li><p><strong>Value</strong>: The actual data stored within a Redis database, associated with its corresponding key.</p>
+</li>
+<li><p><strong>TTL (Time To Live)</strong>: The amount of time a value remains in the Redis database before it expires.</p>
+</li>
+</ul>
+<h2>Class Diagram (in Mermaid syntax)</h2>
+<p>Here is the class diagram in Mermaid syntax:</p>
+<pre><code class="language-mermaid">class IoredisClient {
+  +constructor(client: Redis);
+  +set(key: string, value: string, options: { NX: boolean, PX: number }): Promise&lt;string | null&gt;;
+  +eval(script: string, keys: string[], args: string[]): Promise&lt;number&gt;;
+  +getTTL(resource: string): Promise&lt;number&gt;;
+  +get(resource: string): Promise&lt;string | null&gt;;
+}
+
+class RedisClient {
+  +set(key: string, value: string, options: { NX: boolean, PX: number }): Promise&lt;string | null&gt;;
+  +eval(script: string, keys: string[], args: string[]): Promise&lt;number&gt;;
+  +getTTL(resource: string): Promise&lt;number&gt;;
+  +get(resource: string): Promise&lt;string | null&gt;;
+}
+</code></pre>
+<p>This diagram shows the relationship between the <code>IoredisClient</code> class and the <code>RedisClient</code> interface. The <code>IoredisClient</code> class is responsible for implementing the methods defined in the <code>RedisClient</code> interface to interact with a Redis database using the provided <code>Redis</code> object. </p>
+
+</body>
+</html>
